@@ -5,6 +5,8 @@ import com.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 /**
@@ -19,6 +21,16 @@ public class UserController {
 
     @Autowired
     private UserRepository userRepository;
+
+    // ------------------------
+    // REST METHODS
+    // ------------------------
+
+    //http://localhost:8090/api/user?id=1
+    @RequestMapping(value="user", method= RequestMethod.GET)
+    public @ResponseBody User apiServiceCallForGet(@RequestParam String id) {
+        return userRepository.findOne(Long.valueOf(id));
+    }
 
     // ------------------------
     // PUBLIC METHODS
