@@ -7,7 +7,7 @@ import javax.validation.constraints.NotNull;
  * Created by yangliu on 28/09/2016.
  */
 @Entity
-@Table(name = "users")
+@Table(name = "user")
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -17,18 +17,23 @@ public class User {
     private String email;
 
     @NotNull
-    private String name;
+    @Column(name = "user_name")
+    private String userName;
+
+    @NotNull
+    private String password;
 
     public User() { }
 
     public User(long id) {
-        this.id = id;
+        this.setId(id);
     }
 
     public User(String email, String name) {
-        this.email = email;
-        this.name = name;
+        this.setEmail(email);
+        this.setUserName(name);
     }
+
 
     public long getId() {
         return id;
@@ -46,11 +51,19 @@ public class User {
         this.email = email;
     }
 
-    public String getName() {
-        return name;
+    public String getUserName() {
+        return userName;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 }

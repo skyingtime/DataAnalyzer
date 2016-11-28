@@ -3,11 +3,12 @@ package com.controller;
 import com.model.User;
 import com.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * Created by yangliu on 28/09/2016.
@@ -26,11 +27,35 @@ public class UserController {
     // REST METHODS
     // ------------------------
 
-    //http://localhost:8090/api/user?id=1
-    @RequestMapping(value="user", method= RequestMethod.GET)
-    public @ResponseBody User apiServiceCallForGet(@RequestParam String id) {
-        return userRepository.findOne(Long.valueOf(id));
+
+
+    //-------------------Retrieve Single User--------------------------------------------------------
+    //http://localhost:8090/api/user/1  return user with id 1
+    @RequestMapping(value="/user/{id}", method= RequestMethod.GET)
+    public ResponseEntity<User> apiServiceCallForGet(@PathVariable("id") String id) {
+        if(id != null) {
+            User user = userRepository.findOne(Long.valueOf(id));
+            return new ResponseEntity(user, HttpStatus.OK);
+
+        }
+        return null;
     }
+
+    //-------------------Retrieve All Users--------------------------------------------------------
+    //http://localhost:8090/api/user    return all users
+    //http://localhost:8090/api/user?id=1
+    @RequestMapping(value="/user", method= RequestMethod.GET)
+    public Iterable<User> apiServiceCallForGetAll() {           //@RequestParam
+        return userRepository.findAll();
+    }
+
+    //-------------------Create a User--------------------------------------------------------
+    @RequestMapping(value="/user", method= RequestMethod.POST)
+    public ResponseEntity<User> apiServiceCallForCreate(@RequestBody User user) {
+        userRepository.save(user);
+        return new ResponseEntity(user, HttpStatus.OK);
+    }
+
 
     // ------------------------
     // PUBLIC METHODS
@@ -103,7 +128,7 @@ public class UserController {
      * @param id The id for the user to update.
      * @param email The new email.
      * @param name The new name.
-     * @return A string describing if the user is succesfully updated or not.
+     * @return A string describing if the user is successfully updated or not.
      */
     @RequestMapping("/update")
     @ResponseBody
@@ -111,13 +136,25 @@ public class UserController {
         try {
             User user = userRepository.findOne(id);
             user.setEmail(email);
-            user.setName(name);
+            user.setUserName(name);
             userRepository.save(user);
         }
         catch (Exception ex) {
             return "Error updating the user: " + ex.toString();
         }
         return "User succesfully updated!";
+    }
+
+    @CrossOrigin(origins = "http://localhost:3000")
+    @RequestMapping(value = "/validate", method = {RequestMethod.POST, RequestMethod.GET})
+    public ResponseEntity validateUser(@RequestBody User user) {
+        User existingUser = userRepository.findByUserNameAndPassword(user.getUserName(), user.getPassword());
+        if(existingUser != null) {
+            return new ResponseEntity("success", HttpStatus.OK);
+        }
+        else {
+            return new ResponseEntity(HttpStatus.NOT_FOUND);
+        }
     }
 
 }
