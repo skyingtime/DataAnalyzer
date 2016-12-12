@@ -145,7 +145,7 @@ public class UserController {
         return "User succesfully updated!";
     }
 
-    @CrossOrigin(origins = "http://localhost:3000")
+    //@CrossOrigin(origins = "http://localhost:3000")
     @RequestMapping(value = "/validate", method = {RequestMethod.POST, RequestMethod.GET})
     public ResponseEntity validateUser(@RequestBody User user) {
         User existingUser = userRepository.findByUserNameAndPassword(user.getUserName(), user.getPassword());
